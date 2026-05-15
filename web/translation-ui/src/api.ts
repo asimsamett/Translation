@@ -17,12 +17,14 @@ export type ResxFileDetail = {
   entries: ResxEntry[];
 };
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
+
 async function request<T>(path: string, init?: RequestInit, token?: string): Promise<T> {
   const headers = new Headers(init?.headers);
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const response = await fetch(path, { ...init, headers, credentials: "include" });
+  const response = await fetch(`${apiBaseUrl}${path}`, { ...init, headers, credentials: "include" });
   if (!response.ok) {
     throw new Error(await readErrorMessage(response));
   }
