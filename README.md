@@ -22,6 +22,10 @@ JSON files support both flat key-value and nested object structures:
 
 Nested JSON values are shown in the UI as paths such as `Home.Title`. When saved, the existing nested structure is preserved.
 
+## Demo
+
+![Translation Tool UI demo](docs/images/translation-tool-demo.png)
+
 ## Architecture
 
 | Layer | Technology |

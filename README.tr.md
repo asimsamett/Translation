@@ -22,6 +22,10 @@ JSON dosyalarda hem duz key-value hem de nested object yapisi desteklenir:
 
 Nested JSON degerleri UI'da `Home.Title` gibi gosterilir ve kaydedilirken mevcut nested yapi korunur.
 
+## Demo
+
+![Translation Tool UI demo](docs/images/translation-tool-demo.png)
+
 ## Mimari
 
 | Katman | Teknoloji |
