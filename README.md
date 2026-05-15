@@ -146,3 +146,15 @@ The endpoint names remain `/api/resx` for backward compatibility, but they now s
 - When hosting on IIS or Azure App Service, verify the Entra tenant and SSO settings.
 - Add the UI origin to `Cors:Origins`.
 - Non-string JSON values are not editable in the UI; string values under nested objects are editable.
+
+## GitHub Pages
+
+The repository includes a GitHub Actions workflow at `.github/workflows/pages.yml` that deploys the React UI, not the README, to GitHub Pages.
+
+In GitHub, open **Settings -> Pages** and set **Source** to **GitHub Actions**. On every push to `main`, the workflow builds `web/translation-ui` and deploys the generated `dist` folder.
+
+GitHub Pages hosts only the static UI. The ASP.NET API must be hosted separately. If the API is hosted on another domain, set a repository variable named `VITE_API_BASE_URL` to the API base URL, for example:
+
+```text
+https://translation-api.example.com
+```
