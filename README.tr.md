@@ -151,7 +151,7 @@ Mevcut endpoint adlari geriye uyumluluk icin `/api/resx` olarak kalmistir; ancak
 
 Repoda `.github/workflows/pages.yml` altinda React UI'yi GitHub Pages'e deploy eden bir GitHub Actions workflow'u bulunur. Bu workflow README'yi degil, UI build ciktisini yayinlar.
 
-GitHub'da **Settings -> Pages** ekranina gidin ve **Source** alanini **GitHub Actions** olarak secin. `main` branch'e her push geldiginde workflow `web/translation-ui` projesini build eder ve uretilen `dist` klasorunu deploy eder.
+GitHub'da **Settings -> Pages** ekranina gidin ve **Source** alanini **GitHub Actions** olarak secin. `main` veya `development` branch'e her push geldiginde workflow `web/translation-ui` projesini build eder ve uretilen `dist` klasorunu deploy eder.
 
 GitHub Pages sadece statik UI yayinlar. ASP.NET API ayri bir yerde host edilmelidir. API baska bir domainde host ediliyorsa repoya `VITE_API_BASE_URL` isimli variable ekleyin, ornegin:
 
