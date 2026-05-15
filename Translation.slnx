@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/Translation.Core/Translation.Core.csproj" />
+  <Project Path="src/Translation.Api/Translation.Api.csproj" />
+</Solution>
