@@ -36,7 +36,7 @@ export function TranslationEditor({
           <span />
         </div>
         <h2>Başlamak için bir dosya seçin</h2>
-        <p>Soldaki listeden bir <code>*.resx</code> dosyası seçerek çevirileri düzenleyin.</p>
+        <p>Soldaki listeden bir <code>*.resx</code> veya <code>*.json</code> dosyası seçerek çevirileri düzenleyin.</p>
       </section>
     );
   }

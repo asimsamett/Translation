@@ -1,24 +1,44 @@
 # Translation Tool
 
-Ekip içi web uygulaması: Azure DevOps üzerindeki UI repo’sundaki tüm `*.resx` dosyalarını (tr, en, varsayılan vb.) listeler, düzenler, commit/push eder ve pull request oluşturur.
+**English** | [Turkce](README.tr.md)
 
-## Mimari
+Internal web application for editing resource files in an Azure DevOps UI repository, then committing, pushing, and creating pull requests.
 
-| Katman | Teknoloji |
-|--------|-----------|
+Supported resource files:
+
+- `.resx`
+- `.json`
+
+JSON files support both flat key-value and nested object structures:
+
+```json
+{
+  "Save": "Save",
+  "Home": {
+    "Title": "Home"
+  }
+}
+```
+
+Nested JSON values are shown in the UI as paths such as `Home.Title`. When saved, the existing nested structure is preserved.
+
+## Architecture
+
+| Layer | Technology |
+|-------|------------|
 | Backend | ASP.NET Core 8 (`Translation.Api`) |
 | Core | LibGit2Sharp, Azure DevOps REST API (`Translation.Core`) |
 | Frontend | React + Vite (`web/translation-ui`) |
-| Kimlik | Microsoft Entra ID (kurumsal SSO) |
-| Git / PR | Azure DevOps PAT (sunucu tarafı) |
+| Identity | Microsoft Entra ID (corporate SSO) |
+| Git / PR | Azure DevOps PAT (server-side) |
 
-**Not:** SSO kullanıcıların uygulamaya girmesini sağlar. Git clone/push ve PR işlemleri için sunucuda yapılandırılmış bir **Azure DevOps PAT** kullanılır (Key Vault / User Secrets önerilir).
+**Note:** SSO authenticates users into the app. Git clone/push and PR operations use an Azure DevOps PAT configured on the server. Store the PAT in Key Vault, environment variables, or User Secrets.
 
-## Hızlı başlangıç
+## Quick Start
 
-### 1. Backend yapılandırması
+### 1. Backend Configuration
 
-`src/Translation.Api/appsettings.Development.json` veya User Secrets:
+Use `src/Translation.Api/appsettings.Development.json` or User Secrets:
 
 ```json
 {
@@ -37,12 +57,16 @@ Ekip içi web uygulaması: Azure DevOps üzerindeki UI repo’sundaki tüm `*.re
   },
   "Workspace": {
     "RootPath": "C:\\translation-workspaces",
-    "ResxSearchPattern": "*.resx"
+    "ResxSearchPattern": "*.resx;*.json"
   }
 }
 ```
 
-`AzureAd:TenantId` boş bırakılırsa geliştirme modunda otomatik kimlik doğrulama (Dev) kullanılır.
+`Workspace:ResxSearchPattern` accepts multiple patterns separated by semicolons or commas. The default is `*.resx;*.json`, so both RESX and JSON resource files are listed.
+
+The app excludes common non-resource JSON files and folders such as `package.json`, `package-lock.json`, `tsconfig*.json`, `node_modules`, `bin`, `obj`, `dist`, and `build`.
+
+If `AzureAd:TenantId` is empty, the app uses automatic development authentication.
 
 ```bash
 cd src/Translation.Api
@@ -51,14 +75,15 @@ dotnet user-secrets set "AzureDevOps:PersonalAccessToken" "<pat>"
 dotnet run
 ```
 
-Uygulama arayüzü: `https://localhost:7297` (Swagger yalnızca `/swagger`)
+App UI: `https://localhost:7297`  
+Swagger: `https://localhost:7297/swagger`
 
 ### 2. Entra ID (SSO)
 
-1. **API uygulaması** kaydı: `Translation.Api` — scope `access_as_user`
-2. **SPA uygulaması** kaydı: `translation-ui` — redirect `http://localhost:5173`
-3. SPA’ya API scope izni verin
-4. Frontend `.env`:
+1. Register an **API app** named `Translation.Api` with the `access_as_user` scope.
+2. Register an **SPA app** named `translation-ui` with redirect URI `http://localhost:5173`.
+3. Grant the SPA permission to the API scope.
+4. Configure the frontend `.env`:
 
 ```env
 VITE_AZURE_AD_TENANT_ID=...
@@ -68,7 +93,7 @@ VITE_AZURE_AD_API_SCOPE=api://<api-client-id>/access_as_user
 
 ### 3. Frontend
 
-**Üretim / tek komut (API ile birlikte):**
+**Production / single app hosted by API:**
 
 ```bash
 cd web/translation-ui
@@ -78,9 +103,9 @@ cd ../../src/Translation.Api
 dotnet run
 ```
 
-Tarayıcı doğrudan çeviri arayüzünü açar (`launchUrl` boş, Swagger değil).
+The browser opens the translation UI directly.
 
-**Geliştirme (hot reload):**
+**Development with hot reload:**
 
 ```bash
 # Terminal 1
@@ -90,23 +115,30 @@ cd src/Translation.Api && dotnet run
 cd web/translation-ui && npm run dev
 ```
 
-UI: `http://localhost:5173` — API proxy: `https://localhost:7297`
+UI: `http://localhost:5173`  
+API proxy: `https://localhost:7297`
 
-## API özeti
+## API Summary
 
-| Method | Endpoint | Açıklama |
-|--------|----------|----------|
-| GET | `/api/resx` | Repodaki tüm `*.resx` dosyalarını listeler |
-| GET | `/api/resx/{path}` | Dosya içeriği |
-| PUT | `/api/resx/{path}` | Güncelleme |
-| POST | `/api/git/pull` | `git pull` |
-| POST | `/api/git/commit-push` | Commit + push |
-| POST | `/api/pull-requests` | Azure DevOps PR |
-| GET | `/api/me` | Oturum bilgisi |
+The endpoint names remain `/api/resx` for backward compatibility, but they now support both `.resx` and `.json` resource files.
 
-## Üretim notları
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/resx` | Lists supported resource files in the repository |
+| GET | `/api/resx/{path}` | Gets resource file content |
+| PUT | `/api/resx/{path}` | Updates a resource file |
+| POST | `/api/git/pull` | Runs `git pull` |
+| GET | `/api/git/branches` | Lists branches |
+| GET | `/api/git/branch-defaults` | Gets default branch values |
+| POST | `/api/git/branches` | Creates or checks out a local branch |
+| POST | `/api/git/commit-push` | Commits and pushes changes |
+| POST | `/api/pull-requests` | Creates an Azure DevOps PR |
+| GET | `/api/me` | Gets session information |
 
-- PAT’i ortam değişkeni veya Key Vault’tan okuyun; repoya commit etmeyin
-- `Workspace:RootPath` için kalıcı disk ve yedekleme planlayın
-- IIS / Azure App Service + aynı Entra tenant SSO
-- CORS `Cors:Origins` ile UI origin’inizi ekleyin
+## Production Notes
+
+- Read the PAT from environment variables or Key Vault; do not commit it to the repository.
+- Use persistent storage and backups for `Workspace:RootPath`.
+- When hosting on IIS or Azure App Service, verify the Entra tenant and SSO settings.
+- Add the UI origin to `Cors:Origins`.
+- Non-string JSON values are not editable in the UI; string values under nested objects are editable.

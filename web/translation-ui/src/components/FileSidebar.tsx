@@ -34,7 +34,7 @@ export function FileSidebar({
         <IconSearch className="search-icon" />
         <input
           type="search"
-          placeholder="RESX dosyası ara..."
+          placeholder="Resource dosyası ara..."
           value={fileFilter}
           onChange={(e) => onFileFilterChange(e.target.value)}
         />

@@ -201,7 +201,7 @@ public sealed class GitWorkspaceService : IGitWorkspaceService
             .ToList();
 
         if (pathsToStage.Count == 0)
-            throw new InvalidOperationException("No RESX files to commit.");
+            throw new InvalidOperationException("No resource files to commit.");
 
         Commands.Stage(repo, pathsToStage);
 

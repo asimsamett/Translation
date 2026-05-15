@@ -15,7 +15,7 @@ type Theme = "light" | "dark";
 function fileSuffix(relativePath: string | null): string | undefined {
   if (!relativePath) return undefined;
   const name = relativePath.split("/").pop() ?? relativePath;
-  return name.replace(/(\.[a-z]{2}(-[A-Z]{2})?)?\.resx$/i, "");
+  return name.replace(/(\.[a-z]{2}(-[A-Z]{2})?)?\.(resx|json)$/i, "");
 }
 
 export default function App() {
@@ -31,7 +31,7 @@ export default function App() {
   const [branchName, setBranchName] = useState("");
   const [basedOnBranch, setBasedOnBranch] = useState("main");
   const [branches, setBranches] = useState<string[]>([]);
-  const [commitMessage, setCommitMessage] = useState("Türkçe RESX çevirileri güncellendi");
+  const [commitMessage, setCommitMessage] = useState("Türkçe resource çevirileri güncellendi");
   const [prTitle, setPrTitle] = useState("Türkçe çeviri güncellemeleri");
   const [targetBranch, setTargetBranch] = useState("main");
   const [busy, setBusy] = useState(false);

@@ -4,7 +4,7 @@ namespace Translation.Core;
 
 public static partial class ResxCultureHelper
 {
-    [GeneratedRegex(@"\.([a-z]{2}(?:-[A-Z]{2})?)\.resx$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"\.([a-z]{2}(?:-[A-Z]{2})?)\.(?:resx|json)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex CultureSuffixRegex();
 
     public static string? TryGetCulture(string fileName)
