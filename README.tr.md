@@ -1,3 +1,7 @@
+# Link 
+
+https://asimsamett.github.io/Translation/
+
 # Translation Tool
 
 [English](README.md) | **Turkce**
